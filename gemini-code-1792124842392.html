@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GTA VC WASM Launcher</title>
+  <style>
+    body { background: #111; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
+    canvas { width: 100%; max-width: 1280px; height: 720px; background: #000; display: block; margin: 20px auto; }
+  </style>
+</head>
+<body>
+
+  <h1>My GTA Vice City Launcher</h1>
+  <p>Select your <code>.gz</code> game files archive:</p>
+  <input type="file" id="file-input" accept=".gz,.tar.gz,.zip">
+
+  <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+  <script>
+    var Module = {
+      canvas: document.getElementById('canvas'),
+      print: console.log,
+      printErr: console.error
+    };
+
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const data = new Uint8Array(evt.target.result);
+        // Mount file directly to Emscripten virtual system
+        Module.FS_createDataFile('/', file.name, data, true, true);
+        alert('Files mounted! Launching...');
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+
+</body>
+</html>
